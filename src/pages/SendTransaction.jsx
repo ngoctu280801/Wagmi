@@ -1,19 +1,33 @@
-import React, { useState } from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import React, { useEffect, useState } from "react";
+import {
+  useAccount,
+  useBalance,
+  useDisconnect,
+  usePrepareSendTransaction,
+  useSendTransaction,
+  useWaitForTransaction,
+} from "wagmi";
 import WarningIcon from "@mui/icons-material/Warning";
 import { useDebounce } from "use-debounce";
+import { parseEther } from "ethers/lib/utils.js";
 const NotConnected = () => {
   return (
     <>
       <WarningIcon sx={{ height: "80px", width: "80px" }} />
-      <p className="font-semibold">Vui lòng Connect Wallet</p>
+      <p className="font-semibold">Please Connect Wallet</p>
       <a href="/" className="bg-gray-200 rounded-lg px-4 py-2 ">
         Connect Wallet
       </a>
     </>
   );
 };
-const InputForm = ({ value, setValue, label = "", placeholder = "" }) => {
+const InputForm = ({
+  value,
+  setValue,
+  label = "",
+  placeholder = "",
+  setSuccess = () => {},
+}) => {
   return (
     <div className="flex flex-col gap-2">
       <label className="font-semibold" htmlFor={label}>
@@ -25,6 +39,7 @@ const InputForm = ({ value, setValue, label = "", placeholder = "" }) => {
         id={label}
         value={value}
         onChange={(e) => {
+          setSuccess(false);
           setValue(e.target.value);
         }}
         placeholder={placeholder}
@@ -33,47 +48,65 @@ const InputForm = ({ value, setValue, label = "", placeholder = "" }) => {
     </div>
   );
 };
-const Send = () => {
+const Send = ({ address = "" }) => {
   const [to, setTo] = useState("");
   const [debounceTo] = useDebounce(to, 500);
   const [amount, setAmount] = useState("");
   const [debounceAmount] = useDebounce(amount, 500);
+  const [success, setSuccess] = useState(false);
+
+  const { data } = useBalance({
+    address: address,
+  });
 
   const { disconnect } = useDisconnect();
 
   const handleSend = () => {
-    console.log(
-      "🚀 ~ file: SendTransaction.jsx:41 ~ Send ~ debounceAmount:",
-      debounceAmount
-    );
-    console.log(
-      "🚀 ~ file: SendTransaction.jsx:39 ~ Send ~ debounceTo:",
-      debounceTo
-    );
-    setTo("");
-    setAmount("");
+    sendTransaction?.();
   };
+  const { config } = usePrepareSendTransaction({
+    request: {
+      to: debounceTo,
+      value: debounceAmount ? parseEther(debounceAmount) : undefined,
+    },
+  });
+  const { data: dataSend, sendTransaction } = useSendTransaction(config);
 
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: dataSend?.hash,
+  });
+  useEffect(() => {
+    setSuccess(isSuccess);
+  }, [isSuccess]);
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="mx-auto font-bold text-2xl">Send Transaction</h1>
+    <div className="flex flex-col gap-4 max-w-[400px]">
+      <h1 className="mx-auto font-bold text-2xl ">Send Transaction</h1>
+      <div className="ml-auto">
+        Balance:{" "}
+        <strong>
+          {(data?.formatted * 1).toFixed(4)} {data?.symbol}
+        </strong>
+      </div>
       <InputForm
         placeholder="0xA0Cf...251e"
         label="Recipient"
         value={to}
         setValue={setTo}
+        setSuccess={setSuccess}
       />
       <InputForm
         placeholder="0.05"
         label="Amount"
         value={amount}
         setValue={setAmount}
+        setSuccess={setSuccess}
       />
       <button
+        disabled={!sendTransaction || !to || !amount}
         onClick={handleSend}
         className="w-full px-4 py-2 bg-blue-500 rounded-lg text-white font-semibold"
       >
-        Send
+        {isLoading ? "Sending..." : "Send"}
       </button>
       <button
         onClick={disconnect}
@@ -81,6 +114,15 @@ const Send = () => {
       >
         Disconnected
       </button>
+      {success && (
+        <div className="text-green-500 text-center">
+          Successfully sent <strong>{amount}</strong> ether to{" "}
+          <strong>{to}</strong>
+          <div className="font-semibold">
+            <a href={`https://etherscan.io/tx/${dataSend?.hash}`}>Etherscan</a>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -89,7 +131,7 @@ const SendTransaction = () => {
   const { address, connector, isConnected } = useAccount();
   return (
     <div className="absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2">
-      {isConnected ? <Send /> : <NotConnected />}
+      {isConnected ? <Send address={address} /> : <NotConnected />}
     </div>
   );
 };

@@ -1,23 +1,33 @@
 import React from "react";
-import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
+import {
+  useAccount,
+  useBalance,
+  useConnect,
+  useDisconnect,
+  useEnsName,
+} from "wagmi";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const HomePage = () => {
   const { address, connector, isConnected } = useAccount();
-  console.log(
-    "🚀 ~ file: HomePage.jsx:7 ~ HomePage ~ isConnected:",
-    isConnected
-  );
-
+  const { data, isError } = useBalance({
+    address: address,
+  });
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
   const { disconnect } = useDisconnect();
 
   if (isConnected) {
     return (
-      <div className=" absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2">
+      <div className=" absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2 ">
         <AccountCircleIcon sx={{ width: "100px", height: "80px" }} />
         <strong>{address}</strong>
+        <div>
+          Balance:{" "}
+          <strong>
+            {(data?.formatted * 1).toFixed(4)} {data?.symbol}
+          </strong>
+        </div>
         <div>
           Connected to <strong>{connector?.name}</strong>
         </div>
