@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "../layout/Layout";
 import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
@@ -17,9 +16,10 @@ const HomePage = () => {
   if (isConnected) {
     return (
       <div className=" absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2">
-        <div>{address}</div>
+        <AccountCircleIcon sx={{ width: "100px", height: "80px" }} />
+        <strong>{address}</strong>
         <div>
-          Connected to <strong>{connector.name}</strong>
+          Connected to <strong>{connector?.name}</strong>
         </div>
         <button
           className="bg-red-500 rounded-lg px-3 py-1 text-white"
