@@ -45,7 +45,11 @@ const Layout = ({ children }) => {
           </ul>
         </div>
       </aside>
-      <div className="p-4 sm:ml-64 h-screen">{children}</div>
+      <div className="p-4 sm:ml-64 h-screen relative">
+        <div className="absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2">
+          {children}
+        </div>
+      </div>
     </>
   );
 };

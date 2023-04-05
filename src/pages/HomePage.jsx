@@ -19,7 +19,7 @@ const HomePage = () => {
 
   if (isConnected) {
     return (
-      <div className=" absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2 ">
+      <>
         <AccountCircleIcon sx={{ width: "100px", height: "80px" }} />
         <strong>{address}</strong>
         <div>
@@ -37,12 +37,12 @@ const HomePage = () => {
         >
           Disconnect
         </button>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className=" absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2">
+    <>
       {connectors.map((connector) => (
         <button
           className="bg-orange-400 text-white  rounded-lg px-3 py-1"
@@ -57,9 +57,8 @@ const HomePage = () => {
             " (connecting)"}
         </button>
       ))}
-
       {error && <div>{error.message}</div>}
-    </div>
+    </>
   );
 };
 

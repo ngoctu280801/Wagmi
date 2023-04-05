@@ -7,20 +7,10 @@ import {
   useSendTransaction,
   useWaitForTransaction,
 } from "wagmi";
-import WarningIcon from "@mui/icons-material/Warning";
 import { useDebounce } from "use-debounce";
 import { parseEther } from "ethers/lib/utils.js";
-const NotConnected = () => {
-  return (
-    <>
-      <WarningIcon sx={{ height: "80px", width: "80px" }} />
-      <p className="font-semibold">Please Connect Wallet</p>
-      <a href="/" className="bg-gray-200 rounded-lg px-4 py-2 ">
-        Connect Wallet
-      </a>
-    </>
-  );
-};
+import NotConnected from "../component/NotConnected";
+
 const InputForm = ({
   value,
   setValue,
@@ -81,12 +71,13 @@ const Send = ({ address = "" }) => {
   return (
     <div className="flex flex-col gap-4 max-w-[400px]">
       <h1 className="mx-auto font-bold text-2xl ">Send Transaction</h1>
-      <div className="ml-auto">
+      <div className="ml-auto -mb-4">
         Balance:{" "}
         <strong>
           {(data?.formatted * 1).toFixed(4)} {data?.symbol}
         </strong>
       </div>
+      <div className="font-semibold ml-auto ">{address}</div>
       <InputForm
         placeholder="0xA0Cf...251e"
         label="Recipient"
@@ -129,11 +120,7 @@ const Send = ({ address = "" }) => {
 
 const SendTransaction = () => {
   const { address, connector, isConnected } = useAccount();
-  return (
-    <div className="absolute  w-fit flex flex-col items-center gap-2 top-1/2 left-1/2 -translate-x-1/2  -translate-y-1/2">
-      {isConnected ? <Send address={address} /> : <NotConnected />}
-    </div>
-  );
+  return <>{isConnected ? <Send address={address} /> : <NotConnected />}</>;
 };
 
 export default SendTransaction;
