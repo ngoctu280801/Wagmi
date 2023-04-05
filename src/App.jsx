@@ -18,6 +18,7 @@ import {
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+import SIWE from "./pages/SIWE";
 const { chains, provider, webSocketProvider } = configureChains(
   [goerli],
   [alchemyProvider({ apiKey: "yourAlchemyApiKey" }), publicProvider()]
@@ -64,6 +65,14 @@ function App() {
             element={
               <Layout>
                 <SignMessage />
+              </Layout>
+            }
+          />{" "}
+          <Route
+            path="/siwe"
+            element={
+              <Layout>
+                <SIWE />
               </Layout>
             }
           />

@@ -42,6 +42,14 @@ const Layout = ({ children }) => {
                 <span className="ml-3">Sign Message</span>
               </a>
             </li>
+            <li>
+              <a
+                href="/siwe"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <span className="ml-3">Sign In With Etherium</span>
+              </a>
+            </li>
           </ul>
         </div>
       </aside>
